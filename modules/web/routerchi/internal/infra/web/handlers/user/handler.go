@@ -29,7 +29,6 @@ func RegisterUserRoutes() http.Handler {
 		page := req.NewPage(r)
 		sort := req.NewSort(r)
 		logger.Infof("Request page %d (%d)", page.Page, page.Size)
-
 		users, err := usecase.FindUsers()
 		if err != nil {
 			res.BadRequest(w, r, "abc", "error to find users")
@@ -40,20 +39,16 @@ func RegisterUserRoutes() http.Handler {
 
 	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 		var u user.User
-
 		if err := req.BindJSON(w, r, &u); err != nil {
-			logger.Error()
 			res.BadRequest(w, r, "cde", err.Error())
 			return
 		}
-
 		errs := validate.Validate(u)
 		logger.Infof("Request user with name %s, errors %v", u.FirstName, errs)
-
-		if res.UnprocessableEntityIfInvalid(w, r, u, "Invalid input") {
+		if len(errs) > 0 {
+			res.UnprocessableEntity(w, r, "123", "Invalid body", errs...)
 			return
 		}
-
 		res.Created(w, r, u)
 	})
 

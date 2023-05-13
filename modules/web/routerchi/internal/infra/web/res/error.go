@@ -2,8 +2,6 @@ package res
 
 import (
 	"net/http"
-
-	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/web/validate"
 )
 
 type errDTO struct {
@@ -17,20 +15,15 @@ type ErrResponse struct {
 	Details []errDTO `json:"details,omitempty"`
 }
 
-func NewErrResponse(status int, code, message string) *ErrResponse {
-	return &ErrResponse{
-		Error: errDTO{
-			Status:  status,
-			Code:    code,
-			Message: message,
-		},
-	}
-}
-
-func NewValidationErrResponse(generic any, message string) *ErrResponse {
-	errs := validate.Validate(generic)
+func NewErrResponse(status int, code, message string, errs ...string) *ErrResponse {
 	if len(errs) == 0 {
-		return nil
+		return &ErrResponse{
+			Error: errDTO{
+				Status:  status,
+				Code:    code,
+				Message: message,
+			},
+		}
 	}
 
 	var details []errDTO
@@ -42,7 +35,8 @@ func NewValidationErrResponse(generic any, message string) *ErrResponse {
 
 	return &ErrResponse{
 		Error: errDTO{
-			Status:  http.StatusUnprocessableEntity,
+			Status:  status,
+			Code:    code,
 			Message: message,
 		},
 		Details: details,

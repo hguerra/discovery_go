@@ -28,35 +28,26 @@ func PartialContent(w http.ResponseWriter, r *http.Request, v any) {
 	JSON(w, r, http.StatusPartialContent, NewResponse(v))
 }
 
-func BadRequest(w http.ResponseWriter, r *http.Request, code, message string) {
-	NewErr(w, r, NewErrResponse(http.StatusBadRequest, code, message))
+func BadRequest(w http.ResponseWriter, r *http.Request, code, message string, errs ...string) {
+	NewErr(w, r, NewErrResponse(http.StatusBadRequest, code, message, errs...))
 }
 
-func Unauthorized(w http.ResponseWriter, r *http.Request, code, message string) {
-	NewErr(w, r, NewErrResponse(http.StatusUnauthorized, code, message))
+func Unauthorized(w http.ResponseWriter, r *http.Request, code, message string, errs ...string) {
+	NewErr(w, r, NewErrResponse(http.StatusUnauthorized, code, message, errs...))
 }
 
-func Forbidden(w http.ResponseWriter, r *http.Request, code, message string) {
-	NewErr(w, r, NewErrResponse(http.StatusForbidden, code, message))
+func Forbidden(w http.ResponseWriter, r *http.Request, code, message string, errs ...string) {
+	NewErr(w, r, NewErrResponse(http.StatusForbidden, code, message, errs...))
 }
 
-func NotFound(w http.ResponseWriter, r *http.Request, code, message string) {
-	NewErr(w, r, NewErrResponse(http.StatusNotFound, code, message))
+func NotFound(w http.ResponseWriter, r *http.Request, code, message string, errs ...string) {
+	NewErr(w, r, NewErrResponse(http.StatusNotFound, code, message, errs...))
 }
 
-func UnprocessableEntity(w http.ResponseWriter, r *http.Request, code, message string) {
-	NewErr(w, r, NewErrResponse(http.StatusUnprocessableEntity, code, message))
+func UnprocessableEntity(w http.ResponseWriter, r *http.Request, code, message string, errs ...string) {
+	NewErr(w, r, NewErrResponse(http.StatusUnprocessableEntity, code, message, errs...))
 }
 
-func UnprocessableEntityIfInvalid(w http.ResponseWriter, r *http.Request, generic any, message string) bool {
-	e := NewValidationErrResponse(generic, message)
-	if e != nil {
-		NewErr(w, r, e)
-		return true
-	}
-	return false
-}
-
-func InternalServerError(w http.ResponseWriter, r *http.Request, code, message string) {
-	NewErr(w, r, NewErrResponse(http.StatusInternalServerError, code, message))
+func InternalServerError(w http.ResponseWriter, r *http.Request, code, message string, errs ...string) {
+	NewErr(w, r, NewErrResponse(http.StatusInternalServerError, code, message, errs...))
 }
