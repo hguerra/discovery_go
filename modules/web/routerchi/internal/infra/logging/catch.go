@@ -1,11 +1,15 @@
 package logging
 
-type catchLogger interface {
-	Panic(args ...any)
+import "go.uber.org/zap"
+
+var logger *zap.SugaredLogger
+
+func init() {
+	logger = GetLogger()
 }
 
-func Catch(err error, logger catchLogger) {
+func Catch(err error) {
 	if err != nil {
-		logger.Panic(err.Error())
+		logger.Panic(err)
 	}
 }
