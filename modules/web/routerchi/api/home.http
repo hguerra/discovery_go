@@ -1,6 +1,6 @@
 ### Home Page
-GET http://localhost:3000 HTTP/1.1
+GET http://localhost:8080 HTTP/1.1
 
 
 ### Testing github.com/unrolled/render
-GET http://localhost:3000/ping HTTP/1.1
+GET http://localhost:8080/ping HTTP/1.1

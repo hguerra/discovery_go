@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/config"
 	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/web/res"
 )
 
@@ -15,7 +16,12 @@ func RegisterHomeRoutes() http.Handler {
 	})
 
 	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
-		res.JSON2(w, http.StatusOK, res.NewResponse(res.M{"message": "pong!"}))
+		dto := res.M{
+			"message": "pong!",
+			"name":    config.GetString("app.name"),
+			"secret":  config.GetString("mysecret"),
+		}
+		res.JSON(w, http.StatusOK, res.NewResponse(dto))
 	})
 
 	return r

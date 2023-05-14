@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/config"
 	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/logging"
 	"github.com/unrolled/render"
 	"go.uber.org/zap"
@@ -16,7 +17,7 @@ var r *render.Render
 func init() {
 	logger = logging.GetLogger()
 	r = render.New(render.Options{
-		IsDevelopment: false,
+		IsDevelopment: config.IsDev(),
 		StreamingJSON: true,
 		Directory:     "web/templates",
 		Layout:        "layouts/application",

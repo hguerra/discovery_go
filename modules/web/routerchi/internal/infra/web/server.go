@@ -1,17 +1,20 @@
 package web
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/config"
+	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/logging"
 	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/web/handlers/home"
 	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/web/handlers/user"
 )
 
 func NewServer() {
+	logger := logging.GetLogger()
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
@@ -31,14 +34,17 @@ func NewServer() {
 		r.Mount("/users", user.RegisterUserRoutes())
 	})
 
+	address := fmt.Sprintf(":%s", config.GetString("server.port"))
 	s := &http.Server{
-		Addr:              ":3000",
+		Addr:              address,
 		Handler:           r,
 		ReadHeaderTimeout: 3 * time.Second,
 	}
 
+	logger.Infof("Active profile: %s", config.GetActiveProfile())
+	logger.Infof("Listening and serving HTTP on %s", address)
 	err := s.ListenAndServe()
 	if err != nil {
-		log.Fatalf("Error to starting server: %v", err)
+		logger.Fatalf("Error to starting server in %s: %v", address, err)
 	}
 }

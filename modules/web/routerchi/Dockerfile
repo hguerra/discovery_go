@@ -26,8 +26,11 @@ RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -
 
 # Copy the binary to the production image from the builder stage.
 COPY --from=builder /app/build/main /app/main
+COPY --from=builder /app/configs /app/configs
+COPY --from=builder /app/.env /app/.env
 
 # Run the web service on container startup.
 WORKDIR /app
 ENV TZ=America/Sao_Paulo
+ENV APP_PROFILE=production
 ENTRYPOINT ["/app/main", "serve"]
