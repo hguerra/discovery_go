@@ -1,8 +1,6 @@
 package res
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
 )
 
@@ -31,24 +29,15 @@ type Response struct {
 	Data any `json:"data"`
 }
 
-// JSON marshals 'v' to JSON, automatically escaping HTML and setting the
-// Content-Type as application/json.
-// Based on:
-// https://github.com/go-chi/render/blob/master/responder.go#L93
-// https://github.com/gmhafiz/go8/blob/master/internal/utility/respond/json.go
-func JSON(w http.ResponseWriter, r *http.Request, status int, v any) {
-	buf := &bytes.Buffer{}
-	enc := json.NewEncoder(buf)
-	enc.SetEscapeHTML(true)
-	if err := enc.Encode(v); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+type errDTO struct {
+	Status  int    `json:"status,omitempty"`
+	Code    string `json:"code,omitempty"`
+	Message string `json:"message"`
+}
 
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(status)
-	/* #nosec G104 */
-	w.Write(buf.Bytes()) //nolint:errcheck
+type ErrResponse struct {
+	Error   errDTO   `json:"error"`
+	Details []errDTO `json:"details,omitempty"`
 }
 
 func NewResponse(data any) Response {
@@ -68,4 +57,36 @@ func NewPageableResponse(data any, page, size, total int) Response {
 		},
 		Data: data,
 	}
+}
+
+func NewErrResponse(status int, code, message string, errs ...string) *ErrResponse {
+	if len(errs) == 0 {
+		return &ErrResponse{
+			Error: errDTO{
+				Status:  status,
+				Code:    code,
+				Message: message,
+			},
+		}
+	}
+
+	var details []errDTO
+	for _, e := range errs {
+		details = append(details, errDTO{
+			Message: e,
+		})
+	}
+
+	return &ErrResponse{
+		Error: errDTO{
+			Status:  status,
+			Code:    code,
+			Message: message,
+		},
+		Details: details,
+	}
+}
+
+func NewErr(w http.ResponseWriter, err *ErrResponse) {
+	JSON(w, err.Error.Status, err)
 }

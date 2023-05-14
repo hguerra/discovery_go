@@ -1,6 +1,6 @@
 .PHONY: clean test security build run
 
-APP_NAME := server
+APP_NAME := web
 CURRENT_DIR := $(PWD)
 BUILD_DIR := $(CURRENT_DIR)/build
 
