@@ -13,7 +13,8 @@ RUN go mod download
 COPY . ./
 
 # Build the binary.
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o ./web ./cmd/web/main.go
+RUN mkdir -p build
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o ./build/main main.go
 
 # Use the official Debian slim image for a lean production container.
 # https://hub.docker.com/_/debian
@@ -24,9 +25,9 @@ RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -
     rm -rf /var/lib/apt/lists/*
 
 # Copy the binary to the production image from the builder stage.
-COPY --from=builder /app/web /app/web
+COPY --from=builder /app/build/main /app/main
 
 # Run the web service on container startup.
 WORKDIR /app
 ENV TZ=America/Sao_Paulo
-ENTRYPOINT ["/app/web"]
+ENTRYPOINT ["/app/main", "serve"]

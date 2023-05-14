@@ -1,6 +1,6 @@
 .PHONY: clean test security build run
 
-APP_NAME := web
+APP_NAME := main
 CURRENT_DIR := $(PWD)
 BUILD_DIR := $(CURRENT_DIR)/build
 
@@ -20,6 +20,8 @@ install: devDependencies dependencies
 clean:
 	rm -rf ./build
 	rm -rf ./tmp
+	mkdir -p ./build
+	mkdir -p ./tmp
 
 lint:
 	./bin/golangci-lint run ./...
@@ -41,15 +43,15 @@ testCover: clean
 	TEST_COVERAGE_CHECK=true go test ./pkg/testutil -run TestCheck
 
 build:
-	go build -o $(BUILD_DIR)/$(APP_NAME) ./cmd/web/main.go
+	go build -o $(BUILD_DIR)/$(APP_NAME) main.go
 
 buildDocker:
 	docker build --network host -t $(APP_NAME) .
 
 run:
-	go run cmd/web/main.go
+	go run main.go serve
 
-runDev:
+runDev: clean
 	./bin/air -c .air.toml
 
 runDocker:
