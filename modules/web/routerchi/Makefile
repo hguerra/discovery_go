@@ -20,8 +20,6 @@ install: devDependencies dependencies
 clean:
 	rm -rf ./build
 	rm -rf ./tmp
-	mkdir -p ./build
-	mkdir -p ./tmp
 
 lint:
 	./bin/golangci-lint run ./...
@@ -43,6 +41,7 @@ testCover: clean
 	TEST_COVERAGE_CHECK=true go test ./pkg/testutil -run TestCheck
 
 build:
+	mkdir -p $(BUILD_DIR)
 	go build -o $(BUILD_DIR)/$(APP_NAME) main.go
 
 buildDocker:
@@ -52,6 +51,7 @@ run:
 	go run main.go serve
 
 runDev: clean
+	mkdir -p ./tmp
 	./bin/air -c .air.toml
 
 runDocker:
