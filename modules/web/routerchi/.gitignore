@@ -8,6 +8,8 @@ tmp/
 .docker/
 .idea/
 .secrets/
+/node_modules/
+/dist/
 
 # Test
 *.out

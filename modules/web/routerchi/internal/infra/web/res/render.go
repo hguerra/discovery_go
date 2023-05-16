@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"text/template"
 
 	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/config"
 	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/logging"
@@ -21,6 +22,7 @@ func init() {
 		StreamingJSON: true,
 		Directory:     "web/templates",
 		Layout:        "layouts/application",
+		Funcs:         []template.FuncMap{registerHelpers()},
 	})
 }
 

@@ -1,3 +1,7 @@
+server:
+  assets:
+    url: ""
+
 app:
   profile: production
   name: abc

@@ -1,6 +1,10 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Layout</title>
+    <link rel="stylesheet" href='{{javascriptStylesheetSrc "application"}}'>
     <!-- Render the partial template called `css-$current_template` here -->
     {{ partial "css" }}
   </head>
@@ -12,5 +16,18 @@
     {{ yield }}
     <!-- render the partial template called `footer-$current_template` here -->
     {{ partial "footer" }}
+
+    <script>
+      window.ApplicationConfig = {
+        assetsUrl: "{{assetsUrl}}"
+      };
+    </script>
+    <script src='{{javascriptSrc "application"}}'></script>
+    {{if isDev}}
+      <script>
+        console.log(">> Development: Listening and serving assets on {{assetsUrl}}");
+        new EventSource("{{assetsUrl}}/esbuild").addEventListener("change", () => location.reload());
+      </script>
+    {{end}}
   </body>
 </html>

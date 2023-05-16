@@ -51,7 +51,7 @@ run:
 	go run main.go serve
 
 runDev: clean
-	mkdir -p ./tmp
+	mkdir -p ./tmp/web
 	./bin/air -c .air.toml
 
 runDocker:

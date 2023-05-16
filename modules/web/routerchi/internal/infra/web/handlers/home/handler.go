@@ -20,6 +20,7 @@ func RegisterHomeRoutes() http.Handler {
 			"message": "pong!",
 			"name":    config.GetString("app.name"),
 			"secret":  config.GetString("mysecret"),
+			"assets":  config.GetString("server.assets.url"),
 		}
 		res.JSON(w, http.StatusOK, res.NewResponse(dto))
 	})
