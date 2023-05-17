@@ -13,6 +13,7 @@
   "devDependencies": {
     "esbuild": "0.17.19",
     "esbuild-copy-static-files": "0.1.0",
+    "esbuild-plugin-manifest": "0.6.0",
     "typescript": "5.0.4"
   }
 }

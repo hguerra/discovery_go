@@ -7,6 +7,9 @@ devDependencies:
   esbuild-copy-static-files:
     specifier: 0.1.0
     version: 0.1.0
+  esbuild-plugin-manifest:
+    specifier: 0.6.0
+    version: 0.6.0(esbuild@0.17.19)
   typescript:
     specifier: 5.0.4
     version: 5.0.4
@@ -213,6 +216,14 @@ packages:
 
   /esbuild-copy-static-files@0.1.0:
     resolution: {integrity: sha512-KlpmYqANA1t2nZavEdItfcOjJC6wbHA21v35HJWN32DddGTWKNNGDKljUzbCPojmpD+wAw8/DXr5abJ4jFCE0w==}
+    dev: true
+
+  /esbuild-plugin-manifest@0.6.0(esbuild@0.17.19):
+    resolution: {integrity: sha512-Tm+bq9hqtkV0Zkrk/3YE6XxSkUowEqDBVD1McqVX0OKtlpW19QnXO/E4QiPyJY9Ci+CmKqAhoKdZ5Rva20JL1Q==}
+    peerDependencies:
+      esbuild: ~0
+    dependencies:
+      esbuild: 0.17.19
     dev: true
 
   /esbuild@0.17.19:

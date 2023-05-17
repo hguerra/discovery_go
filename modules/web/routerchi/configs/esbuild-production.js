@@ -1,6 +1,6 @@
 const esbuild = require("esbuild");
 const copyStaticFiles = require("esbuild-copy-static-files");
-const fs = require("fs");
+const manifestPlugin = require("esbuild-plugin-manifest");
 
 async function build() {
   const outdir = "build/web";
@@ -51,6 +51,7 @@ async function build() {
         preserveTimestamps: true,
         recursive: true,
       }),
+      manifestPlugin(),
     ],
   });
 
@@ -63,8 +64,6 @@ async function build() {
       verbose: true,
     })
   );
-
-  fs.writeFileSync(`${outdir}/meta.json`, JSON.stringify(result.metafile));
 }
 
 build().catch((e) => {
