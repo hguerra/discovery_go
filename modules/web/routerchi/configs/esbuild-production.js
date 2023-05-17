@@ -1,4 +1,5 @@
 const esbuild = require("esbuild");
+const copyStaticFiles = require("esbuild-copy-static-files");
 const fs = require("fs");
 
 async function build() {
@@ -25,6 +26,32 @@ async function build() {
       ".svg": "file",
       ".html": "text",
     },
+    plugins: [
+      copyStaticFiles({
+        src: "web/assets/images",
+        dest: `${outdir}/assets/images`,
+        dereference: true,
+        errorOnExist: false,
+        preserveTimestamps: true,
+        recursive: true,
+      }),
+      copyStaticFiles({
+        src: "web/public",
+        dest: `${outdir}/public`,
+        dereference: true,
+        errorOnExist: false,
+        preserveTimestamps: true,
+        recursive: true,
+      }),
+      copyStaticFiles({
+        src: "web/templates",
+        dest: `${outdir}/templates`,
+        dereference: true,
+        errorOnExist: false,
+        preserveTimestamps: true,
+        recursive: true,
+      }),
+    ],
   });
 
   if (result.errors.length) {

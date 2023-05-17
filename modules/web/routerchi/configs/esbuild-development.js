@@ -1,20 +1,10 @@
 const esbuild = require("esbuild");
-const chokidar = require("chokidar");
-const path = require("path");
-const shell = require("shelljs");
+const copyStaticFiles = require("esbuild-copy-static-files");
 
 async function build() {
   const builddir = "tmp";
   const outdir = `${builddir}/web`;
   const entryPoints = ["web/assets/javascripts/application.ts"];
-  const watchPaths = [
-    "web/templates/**/*.tmpl",
-    "web/assets/stylesheets/**/*.css",
-    "web/assets/images/**/*.css",
-  ];
-
-  shell.rm("-rf", outdir);
-  shell.cp("-r", "web/", builddir);
 
   const ctx = await esbuild.context({
     entryPoints,
@@ -35,6 +25,16 @@ async function build() {
       ".svg": "file",
       ".html": "text",
     },
+    plugins: [
+      copyStaticFiles({
+        src: "web/assets/images",
+        dest: `${outdir}/assets/images`,
+        dereference: true,
+        errorOnExist: false,
+        preserveTimestamps: true,
+        recursive: true,
+      }),
+    ],
   });
 
   await ctx.watch();
@@ -46,27 +46,6 @@ async function build() {
   });
 
   console.log(`Listening and serving assets on http://${host}:${port}`);
-
-  const watcher = chokidar.watch(watchPaths, {
-    persistent: true,
-  });
-
-  watcher.on("add", async (file) => {
-    const dirname = `${builddir}/${path.dirname(file)}`;
-    const newfile = `${builddir}/${file}`;
-    console.log("mkdir -p", dirname);
-    shell.mkdir("-p", dirname);
-    console.log("cp -r", file, newfile);
-    shell.cp(file, newfile);
-    await ctx.rebuild();
-  });
-
-  watcher.on("change", async (file) => {
-    const newfile = `${builddir}/${file}`;
-    console.log("cp -r", file, newfile);
-    shell.cp(file, newfile);
-    await ctx.rebuild();
-  });
 }
 
 build().catch((e) => {

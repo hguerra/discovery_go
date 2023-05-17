@@ -11,9 +11,8 @@
   "author": "heitorgcarneiro@gmail.com",
   "license": "MIT",
   "devDependencies": {
-    "chokidar": "3.5.3",
     "esbuild": "0.17.19",
-    "shelljs": "0.8.5",
+    "esbuild-copy-static-files": "0.1.0",
     "typescript": "5.0.4"
   }
 }
