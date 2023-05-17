@@ -11,5 +11,6 @@ func init() {
 func Catch(err error) {
 	if err != nil {
 		logger.Panic(err)
+		panic(err)
 	}
 }

@@ -1,5 +1,6 @@
 const esbuild = require("esbuild");
 const copyStaticFiles = require("esbuild-copy-static-files");
+const manifestPlugin = require("esbuild-plugin-manifest");
 
 async function build() {
   const builddir = "tmp";
@@ -33,6 +34,9 @@ async function build() {
         errorOnExist: false,
         preserveTimestamps: true,
         recursive: true,
+      }),
+      manifestPlugin({
+        hash: false,
       }),
     ],
   });
