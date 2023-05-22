@@ -1,3 +1,3 @@
 declare const ApplicationConfig: {
-  assetsUrl: string;
+  assetsURL: string;
 };

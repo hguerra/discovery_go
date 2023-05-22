@@ -14,12 +14,12 @@ import (
 
 // Based on:
 // https://www.alexedwards.net/blog/how-to-properly-parse-a-json-request-body
-type malformedRequest struct {
+type malformedRequestError struct {
 	status int
 	msg    string
 }
 
-func (mr *malformedRequest) Error() string {
+func (mr *malformedRequestError) Error() string {
 	return mr.msg
 }
 
@@ -33,7 +33,7 @@ func validateContentType(r *http.Request) error {
 		value, _ := header.ParseValueAndParams(r.Header, "Content-Type")
 		if value != "application/json" {
 			msg := "Content-Type header is not application/json"
-			return &malformedRequest{status: http.StatusUnsupportedMediaType, msg: msg}
+			return &malformedRequestError{status: http.StatusUnsupportedMediaType, msg: msg}
 		}
 	}
 	return nil
@@ -56,12 +56,12 @@ func Body(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		if err.Error() == "http: request body too large" {
-			return nil, &malformedRequest{status: http.StatusRequestEntityTooLarge, msg: "Request body too large"}
+			return nil, &malformedRequestError{status: http.StatusRequestEntityTooLarge, msg: "Request body too large"}
 		}
 		return nil, err
 	}
 	if len(body) == 0 {
-		return nil, &malformedRequest{status: http.StatusRequestEntityTooLarge, msg: "Request body mandatory"}
+		return nil, &malformedRequestError{status: http.StatusRequestEntityTooLarge, msg: "Request body mandatory"}
 	}
 	return body, nil
 }
@@ -92,7 +92,7 @@ func BindJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 		// easier for the client to fix.
 		case errors.As(err, &syntaxError):
 			msg := fmt.Sprintf("Request body contains badly-formed JSON (at position %d)", syntaxError.Offset)
-			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+			return &malformedRequestError{status: http.StatusBadRequest, msg: msg}
 
 		// In some circumstances Decode() may also return an
 		// io.ErrUnexpectedEOF error for syntax errors in the JSON. There
@@ -100,15 +100,19 @@ func BindJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 		// https://github.com/golang/go/issues/25956.
 		case errors.Is(err, io.ErrUnexpectedEOF):
 			msg := "Request body contains badly-formed JSON"
-			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+			return &malformedRequestError{status: http.StatusBadRequest, msg: msg}
 
 		// Catch any type errors, like trying to assign a string in the
 		// JSON request body to a int field in our Person struct. We can
 		// interpolate the relevant field name and position into the error
 		// message to make it easier for the client to fix.
 		case errors.As(err, &unmarshalTypeError):
-			msg := fmt.Sprintf("Request body contains an invalid value for the %q field (at position %d)", unmarshalTypeError.Field, unmarshalTypeError.Offset)
-			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+			msg := fmt.Sprintf(
+				"Request body contains an invalid value for the %q field (at position %d)",
+				unmarshalTypeError.Field,
+				unmarshalTypeError.Offset,
+			)
+			return &malformedRequestError{status: http.StatusBadRequest, msg: msg}
 
 		// Catch the error caused by extra unexpected fields in the request
 		// body. We extract the field name from the error message and
@@ -118,19 +122,19 @@ func BindJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 		case strings.HasPrefix(err.Error(), "json: unknown field "):
 			fieldName := strings.TrimPrefix(err.Error(), "json: unknown field ")
 			msg := fmt.Sprintf("Request body contains unknown field %s", fieldName)
-			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+			return &malformedRequestError{status: http.StatusBadRequest, msg: msg}
 
 		// An io.EOF error is returned by Decode() if the request body is
 		// empty.
 		case errors.Is(err, io.EOF):
 			msg := "Request body must not be empty"
-			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+			return &malformedRequestError{status: http.StatusBadRequest, msg: msg}
 
 		// Catch the error caused by the request body being too large. Again
 		// there is an open issue regarding turning this into a sentinel
 		// error at https://github.com/golang/go/issues/30715.
 		case err.Error() == "http: request body too large":
-			return &malformedRequest{status: http.StatusRequestEntityTooLarge, msg: "Request body too large"}
+			return &malformedRequestError{status: http.StatusRequestEntityTooLarge, msg: "Request body too large"}
 
 		// Otherwise default to logging the error and sending a 500 Internal
 		// Server Error response.
@@ -140,9 +144,9 @@ func BindJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 	}
 
 	err = dec.Decode(&struct{}{})
-	if err != io.EOF {
+	if !errors.Is(err, io.EOF) {
 		msg := "Request body must only contain a single JSON object"
-		return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+		return &malformedRequestError{status: http.StatusBadRequest, msg: msg}
 	}
 
 	return nil

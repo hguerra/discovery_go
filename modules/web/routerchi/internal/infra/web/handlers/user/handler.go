@@ -34,7 +34,11 @@ func RegisterUserRoutes() http.Handler {
 			res.BadRequest(w, "abc", "error to find users")
 			return
 		}
-		res.PageOf(w, res.M{"pageRequest": page, "sortRequest": sort, "randomData": users}, 1, 10, 100)
+
+		newPage := 1
+		newSize := 10
+		newTotal := 100
+		res.PageOf(w, res.M{"pageRequest": page, "sortRequest": sort, "randomData": users}, newPage, newSize, newTotal)
 	})
 
 	r.Post("/", func(w http.ResponseWriter, r *http.Request) {

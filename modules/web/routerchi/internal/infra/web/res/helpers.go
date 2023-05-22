@@ -16,17 +16,17 @@ import (
 const assetsBasePath = "/assets/"
 
 var (
-	assetsUrl     = ""
-	assetsUrlOnce = sync.Once{}
+	assetsURL     = ""
+	assetsURLOnce = sync.Once{}
 	manifest      = make(map[string]string)
 	manifestOnce  = sync.Once{}
 )
 
-func getAssetsUrl() string {
-	assetsUrlOnce.Do(func() {
-		assetsUrl = config.GetString("server.assets.url")
+func getAssetsURL() string {
+	assetsURLOnce.Do(func() {
+		assetsURL = config.GetString("server.assets.url")
 	})
-	return assetsUrl
+	return assetsURL
 }
 
 func getManifest(file string) string {
@@ -42,10 +42,10 @@ func getManifest(file string) string {
 		logging.Catch(json.Unmarshal(jsonBytes, &rawManifest))
 
 		for k, v := range rawManifest {
-			_, kPath, kFound := strings.Cut(k, assetsBasePath)
-			_, vPath, vFound := strings.Cut(v, assetsBasePath)
-			if kFound && vFound {
-				manifest[kPath] = fmt.Sprintf("%s%s%s", getAssetsUrl(), assetsBasePath, vPath)
+			_, keyPath, keyFound := strings.Cut(k, assetsBasePath)
+			_, valuePath, valueFound := strings.Cut(v, assetsBasePath)
+			if keyFound && valueFound {
+				manifest[keyPath] = fmt.Sprintf("%s%s%s", getAssetsURL(), assetsBasePath, valuePath)
 			}
 		}
 	})
@@ -61,22 +61,22 @@ func javascriptStylesheetSrc(file string) string {
 }
 
 func stylesheetSrc(file string) string {
-	return fmt.Sprintf("%s%s/stylesheets/%s.css", getAssetsUrl(), assetsBasePath, file)
+	return fmt.Sprintf("%s%s/stylesheets/%s.css", getAssetsURL(), assetsBasePath, file)
 }
 
 func imageSrc(file string) string {
-	return fmt.Sprintf("%s%s/images/%s", getAssetsUrl(), assetsBasePath, file)
+	return fmt.Sprintf("%s%s/images/%s", getAssetsURL(), assetsBasePath, file)
 }
 
 func publicSrc(file string) string {
-	return fmt.Sprintf("%s/public/%s", getAssetsUrl(), file)
+	return fmt.Sprintf("%s/public/%s", getAssetsURL(), file)
 }
 
 func registerHelpers() template.FuncMap {
 	return template.FuncMap{
 		"isDev":                   config.IsDev,
 		"isProd":                  config.IsProd,
-		"assetsUrl":               getAssetsUrl,
+		"assetsURL":               getAssetsURL,
 		"javascriptSrc":           javascriptSrc,
 		"javascriptStylesheetSrc": javascriptStylesheetSrc,
 		"stylesheetSrc":           stylesheetSrc,

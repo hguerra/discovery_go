@@ -3,13 +3,14 @@
 APP_NAME := main
 CURRENT_DIR := $(PWD)
 BUILD_DIR := $(CURRENT_DIR)/build
+BIN_DIR := $(CURRENT_DIR)/bin
 
 devDependencies:
-	asdf install
 	curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s
-	curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s
-	asdf reshim golang
+	GOBIN=$(BIN_DIR) go install gotest.tools/gotestsum@latest
+	GOBIN=$(BIN_DIR) go install github.com/mfridman/tparse@latest
+	GOBIN=$(BIN_DIR) go install github.com/DarthSim/hivemind@latest
 
 dependencies:
 	go mod download
@@ -23,22 +24,15 @@ clean:
 
 lint:
 	./bin/golangci-lint run ./...
-	./bin/gosec -quiet ./...
 
 fmt:
 	go fmt ./...
 
 test: clean
 	mkdir -p $(BUILD_DIR)/coverage
-	go test -v -timeout 30s -coverprofile=$(BUILD_DIR)/coverage/cover.out -cover ./...
-	go tool cover -func=$(BUILD_DIR)/coverage/cover.out
-
-testCover: clean
-	mkdir -p $(BUILD_DIR)/coverage
-	go test -coverprofile=$(BUILD_DIR)/coverage/cover.out -cover ./...
-	go tool cover -func $(BUILD_DIR)/coverage/cover.out -o $(BUILD_DIR)/coverage/cover_percentages.out
+	APP_PROFILE=test ./bin/gotestsum --junitfile $(BUILD_DIR)/coverage/unit-tests.xml -- -coverprofile=$(BUILD_DIR)/coverage/cover.out -cover ./...
 	go tool cover -html=$(BUILD_DIR)/coverage/cover.out -o $(BUILD_DIR)/coverage/coverage.html
-	TEST_COVERAGE_CHECK=true go test ./pkg/testutil -run TestCheck
+	go tool cover -func=$(BUILD_DIR)/coverage/cover.out
 
 build:
 	mkdir -p $(BUILD_DIR)
@@ -52,7 +46,7 @@ run:
 
 runDev: clean
 	mkdir -p ./tmp/web
-	./bin/air -c .air.toml
+	./bin/hivemind Procfile.dev
 
 runDocker:
 	docker run -it --rm --network host $(APP_NAME)

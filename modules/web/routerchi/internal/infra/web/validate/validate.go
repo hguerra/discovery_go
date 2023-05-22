@@ -2,24 +2,32 @@ package validate
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/logging"
 )
 
-var validate *validator.Validate
+var (
+	validate     *validator.Validate
+	validateOnce sync.Once
+)
 
-func init() {
-	validate = validator.New()
+func getValidate() *validator.Validate {
+	validateOnce.Do(func() {
+		validate = validator.New()
+	})
+	return validate
 }
 
 func Validate(generic any) []string {
-	err := validate.Struct(generic)
+	err := getValidate().Struct(generic)
 	if err != nil {
 		// this check is only needed when your code could produce
 		// an invalid value for validation such as interface with nil
 		// value most including myself do not usually have code like this.
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			fmt.Println(err)
+			logging.GetLogger().Errorf("Invalid validation: %v", err)
 			return nil
 		}
 

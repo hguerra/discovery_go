@@ -13,6 +13,11 @@ import (
 	"github.com/hguerra/discovery_go/modules/web/routerchi/internal/infra/web/handlers/user"
 )
 
+const (
+	requestTimeout    = 60 * time.Second
+	readHeaderTimeout = 3 * time.Second
+)
+
 func NewServer() {
 	logger := logging.GetLogger()
 	r := chi.NewRouter()
@@ -22,7 +27,7 @@ func NewServer() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.CleanPath)
-	r.Use(middleware.Timeout(60 * time.Second))
+	r.Use(middleware.Timeout(requestTimeout))
 
 	r.Use(middleware.Heartbeat("/health"))
 
@@ -38,7 +43,7 @@ func NewServer() {
 	s := &http.Server{
 		Addr:              address,
 		Handler:           r,
-		ReadHeaderTimeout: 3 * time.Second,
+		ReadHeaderTimeout: readHeaderTimeout,
 	}
 
 	logger.Infof("Active profile: %s", config.GetActiveProfile())

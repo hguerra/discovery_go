@@ -18,12 +18,14 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var (
+// https://betterprogramming.pub/modern-rest-api-with-go-and-postgresql-1d48767a813
+const (
 	cfgPath           = "./configs"
 	cfgType           = "yaml"
 	cfgName           = "application"
@@ -43,6 +45,7 @@ func loadDefault() {
 	}
 
 	viper.SetEnvPrefix(cfgEnvPrefix)
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.

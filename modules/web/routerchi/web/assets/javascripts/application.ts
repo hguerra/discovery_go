@@ -5,7 +5,7 @@ function main() {
   console.log(">> from js");
 
   const image = new Image();
-  image.src = `${ApplicationConfig.assetsUrl}/${logoUrl}`;
+  image.src = `${ApplicationConfig.assetsURL}/${logoUrl}`;
   document.body.appendChild(image);
 }
 

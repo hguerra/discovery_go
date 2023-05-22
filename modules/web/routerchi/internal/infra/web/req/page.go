@@ -20,19 +20,24 @@ type SortRequest struct {
 }
 
 func NewPage(r *http.Request) *PageRequest {
-	page := DefaultQueryInt(r, "page", 1)
-	if page < 1 {
-		page = 1
+	firstPage := 1
+	defaultSize := 20
+	minSize := 1
+	maxSize := 1000
+
+	page := DefaultQueryInt(r, "page", firstPage)
+	if page < firstPage {
+		page = firstPage
 	}
 
-	size := DefaultQueryInt(r, "size", 20)
-	if size < 1 {
-		size = 20
-	} else if size > 1000 {
-		size = 1000
+	size := DefaultQueryInt(r, "size", defaultSize)
+	if size < minSize {
+		size = defaultSize
+	} else if size > maxSize {
+		size = maxSize
 	}
 
-	offset := size * (page - 1)
+	offset := size * (page - firstPage)
 	return &PageRequest{
 		Page:   page,
 		Size:   size,
