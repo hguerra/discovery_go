@@ -3,7 +3,8 @@
 ## Install
 
 ```
-go install github.com/spf13/cobra-cli@latest
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
+go install github.com/spf13/cobra-cli@v1.3.0
 
 cobra-cli init --author "Heitor Carneiro <heitorgcarneiro@gmail.com>" --license MIT --viper
 
