@@ -9,6 +9,7 @@ import (
 )
 
 type Config struct {
+	env     string
 	strings map[string]string
 	ints    map[string]int
 }
@@ -33,17 +34,37 @@ func (c *Config) GetInt(key string) int {
 	return v
 }
 
+func (c *Config) GetActiveEnv() string {
+	if c.env == "" {
+		c.env = c.GetString("APP_ENV")
+	}
+	return c.env
+}
+
+func (c *Config) IsProduction() bool {
+	return c.GetActiveEnv() == "production"
+}
+
+func (c *Config) IsDevelopment() bool {
+	return c.GetActiveEnv() == "development"
+}
+
+func (c *Config) IsTest() bool {
+	return c.GetActiveEnv() == "test"
+}
+
 func NewConfig(cfgFile, path string) (*Config, error) {
 	env, ok := os.LookupEnv("APP_ENV")
 	if !ok {
 		env = "development"
 	}
 
+	viper.SetConfigType("env")
+
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
 		viper.AddConfigPath(path)
-		viper.SetConfigType("env")
 		viper.SetConfigName(fmt.Sprintf(".env.%s", env))
 	}
 
@@ -56,7 +77,6 @@ func NewConfig(cfgFile, path string) (*Config, error) {
 
 	log.Printf("Loading config file: %s", viper.ConfigFileUsed())
 
-	viper.SetConfigType("env")
 	viper.SetConfigFile(".env")
 	err = viper.MergeInConfig()
 	if err == nil {
