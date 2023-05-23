@@ -2,7 +2,6 @@ package config_test
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/hguerra/discovery_go/modules/config/configviper/pkg/config"
@@ -13,7 +12,7 @@ func TestNewConfig(t *testing.T) {
 	cfgPath := "../../configs"
 
 	t.Run("should load testing config from file", func(t *testing.T) {
-		assert.Empty(t, os.Getenv("APP_ENV"))
+		t.Setenv("APP_ENV", "")
 		cfg, err := config.NewConfig(fmt.Sprintf("%s/.env.test", cfgPath), cfgPath)
 		assert.Nil(t, err)
 		assert.NotNil(t, cfg)

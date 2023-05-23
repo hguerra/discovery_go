@@ -4,6 +4,9 @@
 
 ```
 go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
+go install github.com/go-task/task/v3/cmd/task@v3.25.0
+go install gotest.tools/gotestsum@v1.10.0
+go install github.com/cosmtrek/air@v1.43.0
 go install github.com/spf13/cobra-cli@v1.3.0
 
 cobra-cli init --author "Heitor Carneiro <heitorgcarneiro@gmail.com>" --license MIT --viper
@@ -19,7 +22,7 @@ go run main.go serve
 ```
 cp .env.example .env
 
-go run main.go serve
+task run
 ```
 
 
