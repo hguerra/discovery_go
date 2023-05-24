@@ -1,0 +1,8 @@
+server:
+  assets:
+    url: "http://0.0.0.0:8081"
+    manifest: "tmp/web/manifest.json"
+
+app:
+  profile: development
+  name: abc

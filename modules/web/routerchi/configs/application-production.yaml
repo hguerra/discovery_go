@@ -1,0 +1,8 @@
+server:
+  assets:
+    url: ""
+    manifest: "manifest.json"
+
+app:
+  profile: production
+  name: abc

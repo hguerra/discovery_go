@@ -1,0 +1,22 @@
+# macOS
+**/.DS_Store
+
+# Dev build
+bin/
+build/
+tmp/
+.docker/
+.idea/
+.task/
+.secrets/
+/node_modules/
+/dist/
+
+# Test
+*.out
+*.log
+coverage.html
+coverage/
+
+# Environment variables
+.env

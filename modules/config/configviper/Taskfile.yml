@@ -1,0 +1,70 @@
+version: "3"
+
+vars:
+  BUILD_DIR: "{{.USER_WORKING_DIR}}/build"
+  TMP_DIR: "{{.USER_WORKING_DIR}}/tmp"
+  BIN_DIR: "{{.USER_WORKING_DIR}}/bin"
+
+tasks:
+  setup:
+    cmds:
+      - mkdir -p {{.BIN_DIR}}
+      - GOBIN={{.BIN_DIR}} go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
+      - GOBIN={{.BIN_DIR}} go install github.com/go-task/task/v3/cmd/task@v3.25.0
+      - GOBIN={{.BIN_DIR}} go install gotest.tools/gotestsum@v1.10.0
+      - GOBIN={{.BIN_DIR}} go install github.com/cosmtrek/air@v1.43.0
+      - GOBIN={{.BIN_DIR}} go install github.com/spf13/cobra-cli@v1.3.0
+
+  install:
+    cmds:
+      - go mod download
+      - go mod tidy
+
+  clean:
+    cmds:
+      - rm -rf {{.BUILD_DIR}}
+      - rm -rf {{.TMP_DIR}}
+
+  lint:
+    cmds:
+      - bin/golangci-lint run ./...
+
+  format:
+    cmds:
+      - go fmt ./...
+
+  test:
+    deps: [clean]
+    cmds:
+      - mkdir -p {{.BUILD_DIR}}/coverage
+      - bin/gotestsum --junitfile {{.BUILD_DIR}}/coverage/unit-tests.xml -- -coverprofile={{.BUILD_DIR}}/coverage/cover.out -cover ./...
+      - go tool cover -html={{.BUILD_DIR}}/coverage/cover.out -o {{.BUILD_DIR}}/coverage/coverage.html
+      - go tool cover -func={{.BUILD_DIR}}/coverage/cover.out
+    env:
+      APP_ENV: test
+
+  build:
+    deps: [clean]
+    cmds:
+      - mkdir -p {{.BUILD_DIR}}
+      - go build -o {{.BUILD_DIR}}/main main.go
+
+  build_docker:
+    deps: [clean]
+    cmds:
+      - docker build --network host -t main .
+
+  run:
+    cmds:
+      - go run main.go serve
+    env:
+      APP_ENV: development
+
+  run_docker:
+    cmds:
+      - docker run -it --rm --network host main
+
+  dev:
+    cmds:
+      - mkdir -p {{.TMP_DIR}}/web
+      - bin/air -c .air.toml
