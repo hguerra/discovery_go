@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 
 	"github.com/hguerra/discovery_go/modules/log/zerolog_gcp/pkg/logging"
 	"github.com/hirosassa/zerodriver"
@@ -20,13 +19,12 @@ func main() {
 	l2 := logging.NewLogger("MyService")
 	l2.Info().Msg("test")
 
-	ctx := context.Background()
-	l3 := logging.NewTraceLogger("gcp-project", "MyService")
+	ctx := context.WithValue(context.Background(), "userID", "1234")
+	l3 := logging.New("gcp-project", "MyService")
 	l3.Infof(ctx, "Oi %s", "heitor")
 	l3.Debugf(ctx, "debug")
 	l3.Infof(ctx, "info")
 	l3.Warnf(ctx, "warn")
 	l3.Errorf(ctx, "error")
-	l3.ErrorStackf(ctx, errors.New("seems we have an error here"), "error with %s", "test")
 	// l3.Panicf(ctx, "panic")
 }

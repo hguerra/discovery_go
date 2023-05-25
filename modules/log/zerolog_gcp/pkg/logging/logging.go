@@ -8,6 +8,8 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+const userIDKey = "userID"
+
 type Logger struct {
 	projectID string
 	name      string
@@ -17,42 +19,54 @@ type Logger struct {
 
 func (l *Logger) withTrace(ctx context.Context, event *zerodriver.Event) *zerolog.Event {
 	s := trace.SpanFromContext(ctx)
-	return event.TraceContext(s.SpanContext().TraceID().String(), s.SpanContext().SpanID().String(), l.sampled, l.projectID)
+	return event.TraceContext(
+		s.SpanContext().TraceID().String(),
+		s.SpanContext().SpanID().String(),
+		l.sampled,
+		l.projectID,
+	)
 }
 
-func (l *Logger) write(ctx context.Context, event *zerodriver.Event, msg string, v ...any) {
-	l.withTrace(ctx, event).Str("name", l.name).Msgf(msg, v...)
+func (l *Logger) msgf(ctx context.Context, event *zerodriver.Event, msg string, v ...any) {
+	d := zerolog.Dict().
+		Str("name", l.name)
+
+	userID, ok := ctx.Value(userIDKey).(string)
+	if ok {
+		d.Str(userIDKey, userID)
+	}
+
+	l.
+		withTrace(ctx, event).
+		Dict("logging.googleapis.com/labels", d).
+		Msgf(msg, v...)
 }
 
 func (l *Logger) Debugf(ctx context.Context, msg string, v ...any) {
-	l.write(ctx, l.logger.Debug(), msg, v...)
+	l.msgf(ctx, l.logger.Debug(), msg, v...)
 }
 
 func (l *Logger) Infof(ctx context.Context, msg string, v ...any) {
-	l.write(ctx, l.logger.Info(), msg, v...)
+	l.msgf(ctx, l.logger.Info(), msg, v...)
 }
 
 func (l *Logger) Warnf(ctx context.Context, msg string, v ...any) {
-	l.write(ctx, l.logger.Warn(), msg, v...)
+	l.msgf(ctx, l.logger.Warn(), msg, v...)
 }
 
 func (l *Logger) Errorf(ctx context.Context, msg string, v ...any) {
-	l.write(ctx, l.logger.Error(), msg, v...)
-}
-
-func (l *Logger) ErrorStackf(ctx context.Context, err error, msg string, v ...any) {
-	l.withTrace(ctx, l.logger.Error()).Stack().Err(err).Str("name", l.name).Msgf(msg, v...)
+	l.msgf(ctx, l.logger.Error(), msg, v...)
 }
 
 func (l *Logger) Panicf(ctx context.Context, msg string, v ...any) {
-	l.write(ctx, l.logger.Panic(), msg, v...)
+	l.msgf(ctx, l.logger.Panic(), msg, v...)
 }
 
 func logger() *zerodriver.Logger {
 	return zerodriver.NewProductionLogger()
 }
 
-func NewTraceLogger(projectID string, name string) *Logger {
+func New(projectID string, name string) *Logger {
 	return &Logger{
 		projectID: projectID,
 		name:      name,
