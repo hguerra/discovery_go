@@ -1,0 +1,52 @@
+version: '3'
+
+vars:
+  BUILD_DIR: '{{.USER_WORKING_DIR}}/build'
+  TMP_DIR: '{{.USER_WORKING_DIR}}/tmp'
+  BIN_DIR: '{{.USER_WORKING_DIR}}/bin'
+
+env:
+  APP_ENV: development
+
+dotenv: ['.env']
+
+tasks:
+  download:
+    cmds:
+      - mkdir -p {{.BIN_DIR}}
+      - GOBIN={{.BIN_DIR}} go install github.com/kyleconroy/sqlc/cmd/sqlc@v1.18.0
+      - GOBIN={{.BIN_DIR}} go install github.com/pressly/goose/v3/cmd/goose@v3.11.2
+
+  install:
+    cmds:
+      - go mod download
+      - go mod tidy
+
+  clean:
+    cmds:
+      - rm -rf {{.BUILD_DIR}}
+      - rm -rf {{.TMP_DIR}}
+
+  create_migration:
+    cmds:
+      - bin/goose -dir db/migrations create {{.CLI_ARGS}} sql
+
+  create_seed:
+    cmds:
+      - bin/goose -dir db/seeds create {{.CLI_ARGS}} sql
+
+  migrate:
+    cmds:
+      - bin/goose -dir db/migrations -table _db_version postgres "$DATABASE_URL" up
+
+  seed:
+    cmds:
+      - bin/goose -dir db/seeds -table _db_seeds postgres "$DATABASE_URL" up
+
+  sql:
+    cmds:
+      - bin/sqlc generate
+
+  run:
+    cmds:
+      - go run cmd/main.go
