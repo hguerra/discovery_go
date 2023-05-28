@@ -14,8 +14,7 @@ tasks:
   download:
     cmds:
       - mkdir -p {{.BIN_DIR}}
-      - GOBIN={{.BIN_DIR}} go install github.com/kyleconroy/sqlc/cmd/sqlc@v1.18.0
-      - GOBIN={{.BIN_DIR}} go install github.com/pressly/goose/v3/cmd/goose@v3.11.2
+      - GOBIN={{.BIN_DIR}} go install github.com/volatiletech/sqlboiler/v4@v4.14.2
 
   install:
     cmds:
@@ -27,21 +26,56 @@ tasks:
       - rm -rf {{.BUILD_DIR}}
       - rm -rf {{.TMP_DIR}}
 
-  create_migration:
+  db_inspect:
     cmds:
-      - bin/goose -dir db/migrations create {{.CLI_ARGS}} sql
+      # using args
+      # - atlas schema inspect -u "$DATABASE_URL" > ./db/schema.hcl
+      # using atlas.hcl
+      - atlas schema inspect -c file://db/atlas-declarative.hcl --env development > ./db/schema.hcl
 
-  create_seed:
+  # Declarative workflow
+  db_apply:
     cmds:
-      - bin/goose -dir db/seeds create {{.CLI_ARGS}} sql
+      # using args
+      # - atlas schema apply -u "$DATABASE_URL" --to file://db/schema.hcl
+      # using atlas.hcl
+      - atlas schema apply -c file://db/atlas-declarative.hcl --env development
 
-  migrate:
+  # Versioned workflow
+  db_create_migration:
     cmds:
-      - bin/goose -dir db/migrations -table _db_version postgres "$DATABASE_URL" up
+      # using args
+      # - atlas migrate diff {{.CLI_ARGS}} --dir "file://db/migrations" --to "file://db/schema.hcl" --dev-url "$DATABASE_URL"
+      # using atlas.hcl
+      - atlas migrate diff {{.CLI_ARGS}} -c file://db/atlas-versioned.hcl --env development
 
-  seed:
+  db_create_seed:
     cmds:
-      - bin/goose -dir db/seeds -table _db_seeds postgres "$DATABASE_URL" up
+      # using args
+      # - atlas migrate new {{.CLI_ARGS}} --dir "file://db/migrations"
+      # using atlas.hcl
+      - atlas migrate new {{.CLI_ARGS}} -c file://db/atlas-versioned.hcl --env development
+
+  db_migrate:
+    cmds:
+      # using args
+      # - atlas migrate apply --url "$DATABASE_URL" --dir "file://db/migrations"
+      # using atlas.hcl
+      - atlas migrate apply -c file://db/atlas-versioned.hcl --env development
+
+  db_validate:
+    cmds:
+      # using args
+      # - atlas migrate validate --dir "file://db/migrations" --dev-url "$DATABASE_URL"
+      # using atlas.hcl
+      - atlas migrate validate -c file://db/atlas-versioned.hcl --env development
+
+  db_lint:
+    cmds:
+      # using args
+      # - atlas migrate lint --git-base "main" --dir "file://db/migrations" --dev-url "$DATABASE_URL"
+      # using atlas.hcl
+      - atlas migrate lint -c file://db/atlas-versioned.hcl --env development
 
   sql:
     cmds:
