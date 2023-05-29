@@ -35,6 +35,8 @@ https://atlasgo.io/atlas-schema/projects
 
 https://atlasgo.io/lint/analyzers
 
+https://atlasgo.io/declarative/inspect
+
 https://atlasgo.io/guides/migration-tools/goose-import
 
 https://atlasgo.io/guides/frameworks/sqlc-declarative
@@ -42,3 +44,7 @@ https://atlasgo.io/guides/frameworks/sqlc-declarative
 https://atlasgo.io/guides/frameworks/sqlc-versioned
 
 https://thedevelopercafe.com/articles/sql-in-go-with-sqlboiler-ac8efc4c5cb8
+
+https://gh.atlasgo.cloud/explore
+
+https://koho.dev/understanding-go-and-databases-at-scale-connection-pooling-f301e56fa73
