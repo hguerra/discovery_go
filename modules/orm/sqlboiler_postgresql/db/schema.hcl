@@ -5,7 +5,7 @@ table "users" {
   schema = schema.public
   column "id" {
     null = false
-    type = int
+    type = bigserial
   }
   column "name" {
     null = true
@@ -28,7 +28,7 @@ table "blog_posts" {
   schema = schema.public
   column "id" {
     null = false
-    type = int
+    type = bigserial
   }
   column "title" {
     null = true
@@ -40,7 +40,7 @@ table "blog_posts" {
   }
   column "author_id" {
     null = true
-    type = int
+    type = bigint
   }
   primary_key {
     columns = [column.id]
