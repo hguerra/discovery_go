@@ -31,8 +31,11 @@ tasks:
     cmds:
       # using args
       # - atlas schema inspect -u "$DATABASE_URL" > ./db/schema.hcl
+      # - atlas schema inspect -u "$DATABASE_URL" --format "{{`{{ sql . }}`}}"
       # using atlas.hcl
-      - atlas schema inspect -c file://db/atlas-declarative.hcl --env development > ./db/schema.hcl
+      # - atlas schema inspect -c file://db/atlas-versioned.hcl --env development > ./db/schema.hcl
+      - atlas schema inspect --format "{{`{{ sql . }}`}}" -c file://db/atlas-versioned.hcl --env development
+      - atlas schema inspect --format "{{`{{ json . }}`}}" -c file://db/atlas-versioned.hcl --env development
 
   # Declarative workflow
   db_apply:
@@ -63,6 +66,7 @@ tasks:
       # - atlas migrate apply --url "$DATABASE_URL" --dir "file://db/migrations"
       # using atlas.hcl
       - atlas migrate apply -c file://db/atlas-versioned.hcl --env development
+      - atlas schema inspect --format "{{`{{ sql . }}`}}" -c file://db/atlas-versioned.hcl --env development > ./db/schema.sql
 
   db_validate:
     cmds:
