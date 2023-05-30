@@ -1,0 +1,30 @@
+version: '3'
+
+vars:
+  BUILD_DIR: '{{.USER_WORKING_DIR}}/build'
+  TMP_DIR: '{{.USER_WORKING_DIR}}/tmp'
+  BIN_DIR: '{{.USER_WORKING_DIR}}/bin'
+
+env:
+  APP_ENV: development
+
+dotenv: ['.env']
+
+tasks:
+  download:
+    cmds:
+      - mkdir -p {{.BIN_DIR}}
+
+  install:
+    cmds:
+      - go mod download
+      - go mod tidy
+
+  clean:
+    cmds:
+      - rm -rf {{.BUILD_DIR}}
+      - rm -rf {{.TMP_DIR}}
+
+  run:
+    cmds:
+      - go run cmd/main.go
