@@ -1,0 +1,59 @@
+version: '3'
+
+vars:
+  BUILD_DIR: '{{.USER_WORKING_DIR}}/build'
+  TMP_DIR: '{{.USER_WORKING_DIR}}/tmp'
+  BIN_DIR: '{{.USER_WORKING_DIR}}/bin'
+
+env:
+  APP_ENV: development
+
+dotenv: ['.env']
+
+tasks:
+  download:
+    cmds:
+      - mkdir -p {{.BIN_DIR}}
+
+  install:
+    cmds:
+      - go mod download
+      - go mod tidy
+
+  clean:
+    cmds:
+      - rm -rf {{.BUILD_DIR}}
+      - rm -rf {{.TMP_DIR}}
+
+  db_inspect:
+    cmds:
+      - atlas schema inspect -c file://db/atlas.hcl --env development
+
+  db_create_migration:
+    cmds:
+      - atlas migrate diff {{.CLI_ARGS}} -c file://db/atlas.hcl --env development
+
+  db_create_seed:
+    cmds:
+      - atlas migrate new {{.CLI_ARGS}} -c file://db/atlas.hcl --env development
+
+  db_migrate:
+    cmds:
+      - atlas migrate apply -c file://db/atlas.hcl --env development
+      - atlas schema inspect --format "{{`{{ sql . }}`}}" -c file://db/atlas.hcl --env development > ./db/schema.sql
+
+  db_update_migration_hash:
+    cmds:
+      - atlas migrate hash -c file://db/atlas.hcl --env development
+
+  db_validate:
+    cmds:
+      - atlas migrate validate -c file://db/atlas.hcl --env development
+
+  db_lint:
+    cmds:
+      - atlas migrate lint -c file://db/atlas.hcl --env development
+
+  run:
+    cmds:
+      - go run cmd/main.go

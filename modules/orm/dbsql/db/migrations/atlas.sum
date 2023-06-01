@@ -1,0 +1,5 @@
+h1:wHwYAogbZxR7FTgylD3sQhx57D9MfTtTCHYro3H430c=
+20230601145105_add_extension_postgis.sql h1:Bc8jie8ZVLgo+IFv6PtPYm0wPslaao6ifGEsOmT+gEo=
+20230601150237_add_table_waypoints.sql h1:p6XRqo351r+PiqRxiNmBZZWvuzsMoi3LAKJj1iba5t0=
+20230601150658_add_idx_waypoints_geom.sql h1:z+WGeEbnqXGftUQFv+/RMOwatDcSwIvY5VA3TbTM28Q=
+20230601210143_add_tables_person_and_place.sql h1:Gp/FyyKlFnuXFwKZxv/NyeuKSlCl3bGvgJLwTiTPUYs=
