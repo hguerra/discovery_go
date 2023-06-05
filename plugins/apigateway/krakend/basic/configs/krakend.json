@@ -1,0 +1,28 @@
+{
+  "$schema": "https://www.krakend.io/schema/v3.json",
+  "version": 3,
+  "name": "Basic API Gateway",
+  "port": 8080,
+  "timeout": "60s",
+  "endpoints": [
+    {
+      "@comment": "Mockbin API",
+      "endpoint": "/mockbin",
+      "method": "GET",
+      "cache_ttl": "300s",
+      "input_query_strings": ["page"],
+      "extra_config": {
+        "qos/ratelimit/router": {
+          "max_rate": 20,
+          "capacity": 20
+        }
+      },
+      "backend": [
+        {
+          "host": ["https://mockbin.com"],
+          "url_pattern": "/request"
+        }
+      ]
+    }
+  ]
+}
