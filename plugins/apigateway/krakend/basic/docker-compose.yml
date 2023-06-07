@@ -1,12 +1,28 @@
 version: '3'
 
+networks:
+  service_network:
+    external: false
+
 services:
+  redis:
+    image: redis:6-alpine
+    command: redis-server
+    ports:
+      - '6379:6379'
+    networks:
+      - service_network
+
   krakend_ce:
     # The :watch image restarts the service automatically when the configuration files change.
     # Do not use this image in production, it's meant to speed up your testing and development.
-    image: devopsfaith/krakend:watch
+    image: heitorcarneiro/krakend:2.3.3-watch
     volumes:
       - ./configs:/etc/krakend
     ports:
       - '8080:8080'
     command: ['run', '-d', '-c', '/etc/krakend/krakend.json']
+    networks:
+      - service_network
+    depends_on:
+      - redis

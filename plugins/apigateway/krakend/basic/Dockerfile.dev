@@ -1,0 +1,10 @@
+FROM krakend/builder:2.3.3 as builder
+RUN apk update
+RUN apk add git
+RUN git clone https://github.com/onliner/krakend-http-cache.git
+RUN mkdir -p /tmp
+RUN cd krakend-http-cache && go build -buildmode=plugin -o /tmp/krakend-http-cache.so .
+
+FROM devopsfaith/krakend:2.3.3-watch
+RUN mkdir -p /etc/krakend-plugins
+COPY --from=builder --chown=krakend:nogroup /tmp/krakend-http-cache.so /etc/krakend-plugins

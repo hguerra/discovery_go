@@ -4,6 +4,10 @@
   "name": "Basic API Gateway",
   "port": 8080,
   "timeout": "60s",
+  "plugin": {
+    "pattern": ".so",
+    "folder": "/etc/krakend-plugins"
+  },
   "endpoints": [
     {
       "@comment": "Mockbin API",
@@ -20,9 +24,40 @@
       "backend": [
         {
           "host": ["https://mockbin.com"],
-          "url_pattern": "/request"
+          "url_pattern": "/request",
+          "extra_config": {
+            "plugin/http-client": {
+              "name": "onliner/krakend-http-cache",
+              "onliner/krakend-http-cache": {
+                "ttl": 180,
+                "connection": "redis"
+              }
+            }
+          }
         }
       ]
     }
-  ]
+  ],
+  "extra_config": {
+    "plugin/http-server": {
+      "name": ["onliner/krakend-http-cache"],
+      "onliner/krakend-http-cache": {
+        "connections": {
+          "inmemory": {
+            "driver": "memory"
+          },
+          "redis": {
+            "driver": "redis",
+            "options": {
+              "addr": "redis:6379",
+              "user": "",
+              "pass": "",
+              "db": 1,
+              "pool_size": 5
+            }
+          }
+        }
+      }
+    }
+  }
 }

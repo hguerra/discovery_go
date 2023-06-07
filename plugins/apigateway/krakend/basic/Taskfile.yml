@@ -1,9 +1,13 @@
 version: '3'
 
 tasks:
+  install:
+    cmds:
+      - docker build -f Dockerfile.dev -t heitorcarneiro/krakend:2.3.3-watch .
+
   up:
     cmds:
-      - docker compose up -d
+      - docker compose up
 
   down:
     cmds:
