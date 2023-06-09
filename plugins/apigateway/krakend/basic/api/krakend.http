@@ -4,11 +4,32 @@ GET http://localhost:8080/__health HTTP/1.1
 Content-Type: application/json
 
 
+### Debug 1
+# https://www.krakend.io/docs/endpoints/debug-endpoint/#debug-endpoint-example
+GET http://localhost:8080/default-behavior?a=1&b=2&c=3 HTTP/1.1
+Content-Type: application/json
+
+
+### Debug 2
+GET http://localhost:8080/optional-params?a=1&b=2&c=3 HTTP/1.1
+Content-Type: application/json
+
+
+### Debug 3
+GET http://localhost:8080/mandatory/foo?a=1&b=2&c=3 HTTP/1.1
+Content-Type: application/json
+
+
 ### Mockbin API
 GET http://mockbin.com/request?foo=bar&foo=baz&page=1 HTTP/1.1
 Content-Type: application/json
 
 
-### Mockbin API (KrakenD)
-GET http://localhost:8080/mockbin?foo=bar&foo=baz&page=1 HTTP/1.1
+### Mockbin API (KrakenD proxy)
+GET http://localhost:8080/mockbin1?foo=bar&foo=baz&page=1 HTTP/1.1
+Content-Type: application/json
+
+
+### Plugin example
+GET http://localhost:8080/hijack-me HTTP/1.1
 Content-Type: application/json

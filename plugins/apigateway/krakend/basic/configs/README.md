@@ -14,6 +14,10 @@ https://designer.krakend.io
 
 https://github.com/krakendio/krakend-contrib
 
+https://www.krakend.io/docs/enterprise/endpoints/wildcard/
+
+https://www.krakend.io/docs/enterprise/overview/plugins/
+
 
 ## Setup
 

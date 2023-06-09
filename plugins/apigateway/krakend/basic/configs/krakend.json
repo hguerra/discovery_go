@@ -10,11 +10,42 @@
   },
   "endpoints": [
     {
-      "@comment": "Mockbin API",
-      "endpoint": "/mockbin",
+      "endpoint": "/default-behavior",
+      "backend": [
+        {
+          "@comment": "IMPORTANT: Notice that the /__debug uses the KrakenD host itself",
+          "host": ["http://127.0.0.1:8080"],
+          "url_pattern": "/__debug/default"
+        }
+      ]
+    },
+    {
+      "endpoint": "/optional-params",
+      "input_query_strings": ["a", "b"],
+      "input_headers": ["User-Agent", "Accept"],
+      "backend": [
+        {
+          "host": ["http://127.0.0.1:8080"],
+          "url_pattern": "/__debug/optional"
+        }
+      ]
+    },
+    {
+      "endpoint": "/mandatory/{variable}",
+      "backend": [
+        {
+          "host": ["http://127.0.0.1:8080"],
+          "url_pattern": "/__debug/qs?mandatory={variable}"
+        }
+      ]
+    },
+    {
+      "@comment": "Mockbin API 1",
+      "endpoint": "/mockbin1",
       "method": "GET",
       "cache_ttl": "300s",
       "input_query_strings": ["page"],
+      "output_encoding": "no-op",
       "extra_config": {
         "qos/ratelimit/router": {
           "max_rate": 20,
@@ -23,6 +54,7 @@
       },
       "backend": [
         {
+          "encoding": "no-op",
           "host": ["https://mockbin.com"],
           "url_pattern": "/request",
           "extra_config": {
@@ -40,7 +72,7 @@
   ],
   "extra_config": {
     "plugin/http-server": {
-      "name": ["onliner/krakend-http-cache"],
+      "name": ["onliner/krakend-http-cache", "krakend-key-auth"],
       "onliner/krakend-http-cache": {
         "connections": {
           "inmemory": {
@@ -57,6 +89,9 @@
             }
           }
         }
+      },
+      "krakend-key-auth": {
+        "path": "/hijack-me"
       }
     }
   }
