@@ -7,7 +7,13 @@ tasks:
 
   up:
     cmds:
-      - docker compose up
+      - docker compose up -d redis
+      - docker compose up krakend_ce
+
+  restart:
+    cmds:
+      - docker compose stop krakend_ce
+      - docker compose up krakend_ce
 
   down:
     cmds:

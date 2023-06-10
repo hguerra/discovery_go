@@ -68,6 +68,15 @@
           }
         }
       ]
+    },
+    {
+      "endpoint": "/api/debug",
+      "backend": [
+        {
+          "host": ["http://127.0.0.1:8080"],
+          "url_pattern": "/__debug/default"
+        }
+      ]
     }
   ],
   "extra_config": {
@@ -91,7 +100,10 @@
         }
       },
       "krakend-key-auth": {
-        "path": "/hijack-me"
+        "path": ["/api"],
+        "consumer": "krakend",
+        "key": "1234",
+        "key_name": "auth_token"
       }
     }
   }

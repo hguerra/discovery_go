@@ -30,6 +30,17 @@ GET http://localhost:8080/mockbin1?foo=bar&foo=baz&page=1 HTTP/1.1
 Content-Type: application/json
 
 
-### Plugin example
-GET http://localhost:8080/hijack-me HTTP/1.1
+### Plugin example 1
+GET http://localhost:8080/api/debug HTTP/1.1
 Content-Type: application/json
+
+
+### Plugin example 2
+GET http://localhost:8080/api/debug?auth_token=1234 HTTP/1.1
+Content-Type: application/json
+
+
+### Plugin example 2
+GET http://localhost:8080/api/debug HTTP/1.1
+Content-Type: application/json
+auth_token: 1234
