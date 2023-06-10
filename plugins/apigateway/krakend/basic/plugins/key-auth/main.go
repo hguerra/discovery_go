@@ -88,6 +88,8 @@ func (r registerer) registerHandlers(_ context.Context, extra map[string]interfa
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
+
+			req.Header.Add("X-Consumer", consumer)
 		}
 
 		// If the requested path is not what we defined, continue.
