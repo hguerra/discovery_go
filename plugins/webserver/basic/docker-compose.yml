@@ -1,0 +1,30 @@
+version: '3'
+
+networks:
+  service_network:
+    external: false
+
+services:
+  redis:
+    image: redis:6-alpine
+    command: redis-server
+    ports:
+      - '6379:6379'
+    networks:
+      - service_network
+
+  caddy:
+    image: caddy:2.6.4-alpine
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./site:/srv
+      - ./data:/data
+      - ./configs:/config
+    networks:
+      - service_network
+    depends_on:
+      - redis

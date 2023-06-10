@@ -1,0 +1,14 @@
+localhost
+
+root * /srv
+file_server
+
+log {
+  level DEBUG
+}
+
+handle_path /mockbin01/* {
+	reverse_proxy https://mockbin.com {
+    header_up Host {upstream_hostport}
+  }
+}

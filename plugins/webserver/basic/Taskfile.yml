@@ -1,0 +1,18 @@
+version: '3'
+
+tasks:
+  up:
+    cmds:
+      - docker compose up -d redis
+      - docker compose up -d caddy
+      - docker compose logs -f caddy
+
+  restart:
+    cmds:
+      - docker compose stop caddy
+      - docker compose up -d caddy
+      - docker compose logs -f caddy
+
+  down:
+    cmds:
+      - docker compose down
