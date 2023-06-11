@@ -16,11 +16,13 @@ services:
   caddy:
     image: caddy:2.6.4-alpine
     ports:
+      - '8080:8080'
+      - '2019:2019'
       - '80:80'
       - '443:443'
       - '443:443/udp'
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./02_Caddyfile:/etc/caddy/Caddyfile
       - ./site:/srv
       - ./data:/data
       - ./configs:/config

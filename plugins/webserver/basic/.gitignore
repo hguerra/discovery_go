@@ -1,2 +1,4 @@
 /build/
 /tmp/
+configs/caddy
+data/caddy

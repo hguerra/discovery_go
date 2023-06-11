@@ -1,0 +1,59 @@
+# Global config options
+# https://caddyserver.com/docs/caddyfile/options
+{
+	# turn off admin API endpoint
+	admin off
+	# enabled metics
+	# https://caddyserver.com/docs/metrics
+	servers {
+		metrics
+	}
+}
+
+# Internal endpoint for serving healthchecks etc.
+:8080 {
+  header {
+    # disable FLoC tracking
+    Permissions-Policy interest-cohort=()
+
+    # enable HSTS
+    Strict-Transport-Security max-age=31536000;
+
+    # disable clients from sniffing the media type
+    X-Content-Type-Options nosniff
+
+    # clickjacking protection
+    X-Frame-Options DENY
+
+    # keep referrer data off of HTTP connections
+    Referrer-Policy no-referrer-when-downgrade
+  }
+
+	# no log output for internal healthchecks
+	log {
+		output discard
+	}
+
+  handle_path /mockbin01/* {
+    reverse_proxy https://mockbin.com {
+      header_up Host {upstream_hostport}
+    }
+  }
+
+  handle /healthz {
+		respond /healthz "{\"status\":\"OK\"}" 200
+	}
+
+  handle /metrics {
+		# expose metrics endpoint (disable by default because we turn off the admin API)
+	  # https://caddyserver.com/docs/caddyfile/directives/metrics
+  	metrics /metrics
+	}
+
+  handle {
+		# Fallback for any otherwise unhandled requests, maybe a 404 if you want
+    respond "Not Found" 404 {
+      close
+    }
+	}
+}

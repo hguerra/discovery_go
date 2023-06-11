@@ -1,0 +1,42 @@
+http://localhost:2019 {
+  metrics /metrics
+}
+
+http://localhost:8080 {
+  log {
+    level DEBUG
+  }
+
+  handle_path /mockbin01/* {
+    reverse_proxy https://mockbin.com {
+      header_up Host {upstream_hostport}
+    }
+  }
+
+  handle_path /admin/* {
+    @unauthorized not header X-Auth-Token "test123"
+    respond @unauthorized "Forbidden" 403 {
+      close
+    }
+    reverse_proxy http://localhost:2019 {
+      header_up Host {upstream_hostport}
+    }
+  }
+
+  handle {
+    root * /srv
+    encode zstd gzip
+		# SPA
+    #try_files {path} /index.html
+    file_server
+
+    header {
+      Strict-Transport-Security max-age=31536000;
+      X-Content-Type-Options nosniff;
+      X-XSS-Protection "1; mode=block;"
+      X-Robots-Tag none;
+      X-Frame-Options SAMEORIGIN;
+      Referrer-Policy no-referrer;
+    }
+	}
+}
