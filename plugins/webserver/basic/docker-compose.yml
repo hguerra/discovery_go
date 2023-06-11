@@ -14,7 +14,7 @@ services:
       - service_network
 
   caddy:
-    image: caddy:2.6.4-alpine
+    image: heitorcarneiro/caddy:2.6.4-alpine
     ports:
       - '8080:8080'
       - '2019:2019'

@@ -8,6 +8,22 @@
 	servers {
 		metrics
 	}
+  # https://github.com/caddyserver/cache-handler/tree/master
+  order cache before rewrite
+  cache {
+    allowed_http_verbs GET HEAD
+    ttl 120s
+    api {
+      basepath /myservice
+      prometheus
+      souin {
+        basepath /souin-myservice
+      }
+    }
+    regex {
+      exclude /metrics*
+    }
+  }
 }
 
 # Internal endpoint for serving healthchecks etc.
@@ -37,6 +53,12 @@
   handle_path /mockbin01/* {
     reverse_proxy https://mockbin.com {
       header_up Host {upstream_hostport}
+    }
+  }
+
+  cache /mockbin01/* {
+    redis {
+      url redis:6379
     }
   }
 

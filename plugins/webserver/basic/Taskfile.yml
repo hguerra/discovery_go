@@ -1,6 +1,10 @@
 version: '3'
 
 tasks:
+  install:
+    cmds:
+      - docker build -t heitorcarneiro/caddy:2.6.4-alpine .
+
   up:
     cmds:
       - docker compose up -d redis
