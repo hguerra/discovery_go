@@ -19,6 +19,31 @@ import (
 	"github.com/markbates/goth/providers/google"
 )
 
+const SessionName = "_ctbz_session"
+
+func addUserToSession(res http.ResponseWriter, req *http.Request, s *sessions.CookieStore, u goth.User) {
+	session, err := s.Get(req, SessionName)
+	if err != nil {
+		log.Print("Error ", err)
+	}
+
+	// Remove the raw data to reduce the size
+	log.Println(u.RawData)
+	u.RawData = map[string]interface{}{}
+
+	session.Values["user"] = u
+	err = session.Save(req, res)
+	if err != nil {
+		log.Print("Problem Saving session data", err)
+	}
+}
+
+func removeUserFromSession(res http.ResponseWriter, req *http.Request, s *sessions.CookieStore) {
+	session, _ := s.Get(req, SessionName)
+	session.Values["user"] = goth.User{}
+	session.Save(req, res)
+}
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -37,8 +62,8 @@ func main() {
 		log.Fatal("Fail to generate key")
 	}
 
-	maxAge := 86400 * 30 // 30 days
-	isProd := false      // Set to true when serving over https
+	maxAge := 86400 // 1 day
+	isProd := false // Set to true when serving over https
 
 	store := sessions.NewCookieStore(hashKey, blockKey)
 	store.MaxAge(maxAge)
@@ -74,12 +99,14 @@ func main() {
 			fmt.Fprintln(res, err)
 			return
 		}
+		addUserToSession(res, req, store, user)
 		t, _ := template.New("foo").Parse(userTemplate)
 		t.Execute(res, user)
 	})
 
 	p.Get("/logout/{provider}", func(res http.ResponseWriter, req *http.Request) {
 		gothic.Logout(res, req)
+		removeUserFromSession(res, req, store)
 		res.Header().Set("Location", "/")
 		res.WriteHeader(http.StatusTemporaryRedirect)
 	})
@@ -95,6 +122,19 @@ func main() {
 	})
 
 	p.Get("/", func(res http.ResponseWriter, req *http.Request) {
+		session, _ := store.Get(req, SessionName)
+		rawUser, found := session.Values["user"]
+		if found {
+			gothUser := rawUser.(goth.User)
+			log.Println(gothUser)
+
+			if gothUser.Email != "" {
+				t, _ := template.New("foo").Parse(userTemplate)
+				t.Execute(res, gothUser)
+				return
+			}
+		}
+
 		t, _ := template.New("foo").Parse(indexTemplate)
 		t.Execute(res, providerIndex)
 	})
