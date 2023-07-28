@@ -1,0 +1,57 @@
+version: '3.9'
+
+networks:
+  service_network:
+    external: false
+
+services:
+  # http://localhost:8080/
+  # http://localhost:8001/
+  kong:
+    image: heitorcarneiro/kong:3.3.0-ubuntu
+    container_name: kong_gateway
+    cpu_count: 1
+    mem_limit: 512m
+    environment:
+      # KONG_DATABASE: 'off'
+      # KONG_PROXY_LISTEN: '0.0.0.0:8080'
+      # KONG_ADMIN_LISTEN: '0.0.0.0:8001'
+      # KONG_STATUS_LISTEN: '0.0.0.0:8100'
+      # KONG_ADMIN_ACCESS_LOG: 'off'
+      # KONG_ADMIN_ERROR_LOG: /dev/stderr
+      # KONG_PROXY_ACCESS_LOG: 'off'
+      # KONG_PROXY_ERROR_LOG: /dev/stderr
+      # KONG_DECLARATIVE_CONFIG: '/opt/kong/kong.yaml'
+      # KONG_PLUGINS: bundled,kong-jwt2header,kong-path-allow,response-cache
+      # KONG_LOG_LEVEL: debug
+      KONG_LOG_LEVEL: error
+    ports:
+      - '8080:8080'
+      - '8001:8001'
+      - '8100:8100'
+    networks:
+      - service_network
+    healthcheck:
+      test: ['CMD', 'kong', 'health']
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - './kong.yaml:/opt/kong/kong.yaml:rw'
+
+  # http://localhost:1337/
+  # konga:
+  #   image: pantsel/konga:0.14.9
+  #   container_name: kong_ui
+  #   cpu_count: 1
+  #   mem_limit: 512m
+  #   environment:
+  #     NODE_ENV: production
+  #     TOKEN_SECRET: tokensecret
+  #     NO_AUTH: 'true'
+  #   ports:
+  #     - '1337:1337'
+  #   networks:
+  #     - service_network
+  #   depends_on:
+  #     - kong

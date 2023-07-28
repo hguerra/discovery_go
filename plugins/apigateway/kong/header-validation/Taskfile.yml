@@ -1,0 +1,29 @@
+version: "3"
+
+tasks:
+  build:
+    cmds:
+      - docker build -t heitorcarneiro/kong:3.3.0-ubuntu .
+
+  up:
+    cmds:
+      - docker compose up -d
+      - docker compose logs -f kong
+
+  down:
+    cmds:
+      - docker compose down
+
+  run:
+    cmds:
+      - task: down
+      - task: build
+      - task: up
+
+  test:
+    cmds:
+      - curl -i --location --request GET "http://localhost:8080"
+
+  test_auth:
+    cmds:
+      - curl -i --location --request GET "http://localhost:8080" --header "my_header_key:test"
