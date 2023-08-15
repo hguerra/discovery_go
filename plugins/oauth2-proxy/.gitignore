@@ -1,0 +1,8 @@
+# project
+.env
+.task/
+.dev/
+.tmp/
+bin/
+oauth2-proxy.cfg
+proxy.cfg

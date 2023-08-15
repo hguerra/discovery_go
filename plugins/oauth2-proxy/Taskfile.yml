@@ -1,0 +1,41 @@
+version: '3'
+
+vars:
+  BIN_DIR: '{{.USER_WORKING_DIR}}/bin'
+
+dotenv: ['.env']
+
+tasks:
+  download:
+    cmds:
+      - mkdir -p {{.BIN_DIR}}
+      - curl -L https://github.com/hguerra/envsubst/releases/download/v1.0.6/envsubst_linux_amd64 -o ./bin/envsubst && chmod +x ./bin/envsubst
+
+  clean:
+    cmds:
+      - rm -rf proxy.cfg
+
+  config:
+    cmds:
+      - bin/envsubst -no-empty < configs/proxy-template.cfg > proxy.cfg
+
+  build:
+    cmds:
+      - task: clean
+      - task: config
+      - docker build -t heitorcarneiro/oauth2-proxy:v7.4.0 .
+
+  up:
+    cmds:
+      - docker compose up
+
+  down:
+    cmds:
+      - docker compose down
+
+  run:
+    cmds:
+      - task: down
+      - task: clean
+      - task: config
+      - task: up

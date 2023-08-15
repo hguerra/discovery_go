@@ -1,0 +1,28 @@
+version: '3.9'
+
+networks:
+  service_network:
+    external: false
+
+services:
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.4.0
+    command:
+      - --config
+      - /opt/oauth2-proxy/proxy.cfg
+    ports:
+      - 4180:4180
+    networks:
+      - service_network
+    volumes:
+      - './proxy.cfg:/opt/oauth2-proxy/proxy.cfg:rw'
+    depends_on:
+      - echo
+
+  echo:
+    image: mendhak/http-https-echo
+    ports:
+      - 8080:8080
+      - 8443:8443
+    networks:
+      - service_network
