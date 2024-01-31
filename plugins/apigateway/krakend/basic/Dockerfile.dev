@@ -1,4 +1,4 @@
-FROM krakend/builder:2.3.3 as builder
+FROM krakend/builder:2.4.3 as builder
 RUN apk update
 RUN apk add git
 RUN mkdir -p /tmp
@@ -9,7 +9,7 @@ RUN cd krakend-http-cache && go build -buildmode=plugin -o /tmp/krakend-http-cac
 COPY plugins /plugins
 RUN cd /plugins/key-auth && go build -buildmode=plugin -o /tmp/krakend-key-auth.so .
 
-FROM devopsfaith/krakend:2.3.3-watch
+FROM devopsfaith/krakend:2.4.3-watch
 RUN mkdir -p /etc/krakend-plugins
 COPY --from=builder --chown=krakend:nogroup /tmp/krakend-http-cache.so /etc/krakend-plugins
 COPY --from=builder --chown=krakend:nogroup /tmp/krakend-key-auth.so /etc/krakend-plugins

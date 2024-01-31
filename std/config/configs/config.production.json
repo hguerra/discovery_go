@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "name": "MyApp",
+  "env": "production",
+  "a": {
+    "b": "c",
+    "d": {
+      "e": 2
+    }
+  },
+  "endpoints": [
+    {
+      "endpoint": "https://api.test.com"
+    }
+  ],
+  "fakeArray": [],
+  "server": {
+    "port": 8080
+  }
+}

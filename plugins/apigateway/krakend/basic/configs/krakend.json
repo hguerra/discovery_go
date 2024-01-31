@@ -64,6 +64,12 @@
                 "ttl": 180,
                 "connection": "redis"
               }
+            },
+            "auth/client-credentials": {
+              "client_id": "XXXX.apps.googleusercontent.com",
+              "client_secret": "XXXXX",
+              "token_url": "https://oauth2.googleapis.com/token",
+              "scopes": "openid, profile, email"
             }
           }
         }
