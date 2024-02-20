@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"os"
 	"strconv"
 	"strings"
@@ -197,4 +198,45 @@ func Load(file string) (*configuration, error) {
 		strings:  make(map[string]string),
 		floats64: make(map[string]float64),
 	}, nil
+}
+
+type configuration2 struct {
+	Version int    `json:"version"`
+	Name    string `json:"name"`
+	Env     string `json:"env"`
+	A       struct {
+		B string `json:"b"`
+		D struct {
+			E int `json:"e"`
+		} `json:"d"`
+	} `json:"a"`
+	Endpoints []struct {
+		Endpoint string `json:"endpoint"`
+	} `json:"endpoints"`
+	Server struct {
+		Port int `json:"port"`
+	} `json:"server"`
+}
+
+func Getenv(key, fallback string) string {
+	v, ok := os.LookupEnv(key)
+	if ok {
+		return v
+	}
+	return fallback
+}
+
+func Load2(file string) (*configuration2, error) {
+	f, err := os.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	var cfg configuration2
+	err = json.Unmarshal(f, &cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &cfg, nil
 }
