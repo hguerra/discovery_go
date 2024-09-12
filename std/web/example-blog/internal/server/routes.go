@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"example-blog/cmd/web"
+	"example-blog/internal/posts"
+
 	"github.com/a-h/templ"
 )
 
@@ -20,6 +22,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.Handle("/assets/", fileServer)
 	mux.Handle("/web", templ.Handler(web.HelloForm()))
 	mux.HandleFunc("/hello", web.HelloWebHandler)
+
+	postsHandler := web.NewPostsHandler(posts.FileReader{})
+	mux.HandleFunc("GET /posts/{slug}", postsHandler.GetPostBySlugHandler)
 
 	return mux
 }
