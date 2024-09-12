@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"example-blog/cmd/web"
-	"example-blog/internal/posts"
+	"example-blog/internal/domain/posts"
 
 	"github.com/a-h/templ"
 )

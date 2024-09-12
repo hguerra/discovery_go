@@ -1,7 +1,7 @@
 package web
 
 import (
-	"example-blog/internal/posts"
+	"example-blog/internal/domain/posts"
 	"fmt"
 	"net/http"
 )

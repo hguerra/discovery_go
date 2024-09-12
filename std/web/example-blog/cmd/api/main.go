@@ -1,7 +1,7 @@
 package main
 
 import (
-	"example-blog/internal/server"
+	"example-blog/internal/infra/server"
 	"fmt"
 )
 
