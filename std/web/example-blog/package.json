@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Simple blog example",
   "scripts": {
-    "build:css": "tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css"
+    "build:css": "tailwindcss -i web/assets/css/input.css -o web/assets/css/output.css"
   },
   "keywords": [],
   "author": "",

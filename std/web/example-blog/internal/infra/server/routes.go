@@ -5,18 +5,15 @@ import (
 	"log"
 	"net/http"
 
-	"example-blog/cmd/web"
 	"example-blog/internal/domain/posts"
+	"example-blog/web"
 
 	"github.com/a-h/templ"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
-
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", s.HelloWorldHandler)
-
-	mux.HandleFunc("/health", s.healthHandler)
+	mux.HandleFunc("/healthz", s.healthHandler)
 
 	fileServer := http.FileServer(http.FS(web.Files))
 	mux.Handle("/assets/", fileServer)
