@@ -7,6 +7,8 @@ import (
 
 	"example-blog/internal/domain/posts"
 	"example-blog/web"
+	"example-blog/web/components"
+	"example-blog/web/handlers"
 
 	"github.com/a-h/templ"
 )
@@ -17,10 +19,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	fileServer := http.FileServer(http.FS(web.Files))
 	mux.Handle("/assets/", fileServer)
-	mux.Handle("/web", templ.Handler(web.HelloForm()))
-	mux.HandleFunc("/hello", web.HelloWebHandler)
+	mux.Handle("/web", templ.Handler(components.HelloForm()))
+	mux.HandleFunc("/hello", handlers.HelloWebHandler)
 
-	postsHandler := web.NewPostsHandler(posts.FileReader{})
+	postsHandler := handlers.NewPostsHandler(posts.FileReader{})
 	mux.HandleFunc("GET /posts/{slug}", postsHandler.GetPostBySlugHandler)
 
 	return mux
