@@ -18,14 +18,10 @@ build:
 run:
 	@go run cmd/api/main.go
 
-
-
 # Test the application
 test:
 	@echo "Testing..."
 	@go test ./... -v
-
-
 
 # Clean the binary
 clean:
@@ -33,7 +29,6 @@ clean:
 	@rm -f main
 
 # Live Reload
-
 watch:
 	@if command -v air > /dev/null; then \
             air; \
@@ -49,6 +44,5 @@ watch:
                 exit 1; \
             fi; \
         fi
-
 
 .PHONY: all build run test clean watch

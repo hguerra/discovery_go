@@ -22,7 +22,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	postsHandler := handlers.NewPostsHandler(posts.FileReader{})
 
-	mux.Handle("GET /web", templ.Handler(pages.HelloForm()))
+	mux.Handle("GET /web", templ.Handler(pages.HelloForm("Example")))
 	mux.HandleFunc("POST /hello", handlers.HelloHandler)
 	mux.HandleFunc("GET /posts/{slug}", postsHandler.GetPostBySlugHandler)
 
