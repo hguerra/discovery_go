@@ -1,0 +1,30 @@
+{{define "index"}}
+<!DOCTYPE html>
+<html>
+  <head>
+    {{template "_header"}}
+  </head>
+  <body>
+    {{template "_message"}}
+    <p>Page: Index</p>
+    <p>Welcome {{.name}}</p>
+
+    <br/>
+    <input
+      type="text"
+      name="q"
+      hx-get="/search"
+      hx-trigger="keyup changed delay:500ms"
+      hx-target="#search-results"
+      hx-indicator="#indicator"
+      placeholder="Search..."
+    />
+
+    <img id="indicator" class="htmx-indicator" src="/assets/images/spinner.gif">
+
+    <div id="search-results"></div>
+
+    <script type="module" src="/assets/javascripts/application.js"></script>
+  </body>
+</html>
+{{end}}

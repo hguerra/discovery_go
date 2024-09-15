@@ -1,0 +1,17 @@
+package pages
+
+import "example-blog-templ-markdown/web/components"
+
+templ Post(title, author, content string) {
+	@components.Base(title) {
+		<div class="container mx-auto">
+			<h1 class="text-4xl font-bold text-center">{ title }</h1>
+			<div class="text-center mt-4">
+				<p class="text-gray-500">Author: { author }</p>
+			</div>
+			<div class="prose max-w-full">
+        @templ.Raw(content)
+			</div>
+		</div>
+	}
+}
