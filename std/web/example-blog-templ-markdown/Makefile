@@ -7,19 +7,23 @@ install:
 	@go install github.com/a-h/templ/cmd/templ@latest
 	@go install github.com/air-verse/air@latest
 	@pnpm install
+	@asdf reshim golang
 
-build:
-	@echo "Building..."
+build-deps:
+	@echo "Building deps..."
 	@templ generate
 	@pnpm build:css
+
+build: build-deps
+	@echo "Building..."
 	@go build -o main cmd/api/main.go
 
 # Run the application
-run:
+run: build-deps
 	@go run cmd/api/main.go
 
 # Test the application
-test:
+test: build-deps
 	@echo "Testing..."
 	@go test ./... -v
 

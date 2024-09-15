@@ -6,7 +6,9 @@ import (
 	"example-blog-templ-markdown/web/pages"
 	"log"
 	"net/http"
+	"strings"
 
+	"github.com/adrg/frontmatter"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 )
@@ -27,6 +29,19 @@ func (p *PostsHandler) GetPostBySlugHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// var post posts.Post
+	// post.Slug = slug
+
+	post := posts.Post{
+		Slug: slug,
+	}
+
+	rest, err := frontmatter.Parse(strings.NewReader(postMarkdown), &post)
+	if err != nil {
+		http.Error(w, "error parsing frontmatter", http.StatusInternalServerError)
+		return
+	}
+
 	mdRenderer := goldmark.New(
 		goldmark.WithExtensions(
 			highlighting.NewHighlighting(
@@ -36,17 +51,15 @@ func (p *PostsHandler) GetPostBySlugHandler(w http.ResponseWriter, r *http.Reque
 	)
 
 	var buf bytes.Buffer
-	err = mdRenderer.Convert([]byte(postMarkdown), &buf)
+	err = mdRenderer.Convert(rest, &buf)
 	if err != nil {
 		http.Error(w, "error converting markdown", http.StatusInternalServerError)
 		return
 	}
 
-	component := pages.Post(
-		"My First Post",
-		"Heitor Carneiro",
-		buf.String(),
-	)
+	post.Content = buf.String()
+	log.Println(post)
+	component := pages.Post(post)
 	err = component.Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
