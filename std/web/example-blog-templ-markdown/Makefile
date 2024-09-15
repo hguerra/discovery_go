@@ -49,4 +49,7 @@ watch:
             fi; \
         fi
 
+templ-watch:
+	@templ generate --watch --proxy="http://localhost:8080" --cmd="go run cmd/api/main.go"
+
 .PHONY: all build run test clean watch

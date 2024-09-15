@@ -28,4 +28,4 @@ tmp/
 main
 *templ.go
 node_modules
-
+coverage

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "name": "MyApp",
+  "env": "development",
+  "logLevel": "INFO",
+  "server": {
+    "port": 8080
+  }
+}
