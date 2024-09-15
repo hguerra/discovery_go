@@ -1,0 +1,13 @@
+package pages
+
+import "example-blog/web/components"
+
+templ HelloForm(title string) {
+	@components.Base(title) {
+		<form hx-post="/hello" method="POST" hx-target="#hello-container">
+			<input class="border" id="name" name="name" type="text"/>
+			<button type="submit">Submit</button>
+		</form>
+		<div id="hello-container"></div>
+	}
+}

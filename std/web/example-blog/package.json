@@ -1,0 +1,14 @@
+{
+  "name": "example-blog",
+  "version": "1.0.0",
+  "description": "Simple blog example",
+  "scripts": {
+    "build:css": "tailwindcss -i web/assets/css/input.css -o web/assets/css/output.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "3.4.11"
+  }
+}
