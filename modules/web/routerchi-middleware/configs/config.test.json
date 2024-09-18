@@ -2,7 +2,10 @@
   "version": 1,
   "name": "MyApp",
   "env": "test",
-  "logLevel": "INFO",
+  "log": {
+     "level": "INFO",
+     "addSource": true
+  },
   "server": {
     "port": 8080
   }

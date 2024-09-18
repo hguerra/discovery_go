@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"time"
+
 	"routerchi-middleware/internal/infra/config"
 	"routerchi-middleware/internal/infra/logger"
-	"time"
 )
 
-func NewServer(cfg *config.Configuration) *http.Server {
+func NewServer(cfg config.Configuration) *http.Server {
 	return &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
 		Handler:      NewMux(),

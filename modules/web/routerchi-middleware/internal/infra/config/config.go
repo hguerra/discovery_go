@@ -11,13 +11,35 @@ const (
 )
 
 type Configuration struct {
-	Version  int    `json:"version"`
-	Name     string `json:"name"`
-	Env      string `json:"env"`
-	LogLevel string `json:"logLevel"`
-	Server   struct {
+	Version int    `json:"version"`
+	Name    string `json:"name"`
+	Env     string `json:"env"`
+	Log     struct {
+		Level     string `json:"level"`
+		AddSource bool   `json:"addSource"`
+	} `json:"log"`
+	Server struct {
 		Port int `json:"port"`
 	} `json:"server"`
+}
+
+func (c Configuration) IsDevelopment() bool {
+	return c.Env == DEFAULT_APP_ENV
+}
+
+func NewConfig(file string) (Configuration, error) {
+	f, err := os.ReadFile(file)
+	if err != nil {
+		return Configuration{}, err
+	}
+
+	var cfg Configuration
+	err = json.Unmarshal(f, &cfg)
+	if err != nil {
+		return Configuration{}, err
+	}
+
+	return cfg, nil
 }
 
 func Getenv(key, fallback string) string {
@@ -30,23 +52,4 @@ func Getenv(key, fallback string) string {
 
 func GetAppEnv() string {
 	return Getenv(KEY_APP_ENV, DEFAULT_APP_ENV)
-}
-
-func NewConfig(file string) (*Configuration, error) {
-	f, err := os.ReadFile(file)
-	if err != nil {
-		return nil, err
-	}
-
-	var cfg Configuration
-	err = json.Unmarshal(f, &cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	return &cfg, nil
-}
-
-func (c *Configuration) IsDevelopment() bool {
-	return c.Env == DEFAULT_APP_ENV
 }

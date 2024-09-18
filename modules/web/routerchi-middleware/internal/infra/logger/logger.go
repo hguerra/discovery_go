@@ -3,8 +3,9 @@ package logger
 import (
 	"log/slog"
 	"os"
-	"routerchi-middleware/internal/infra/config"
 	"strings"
+
+	"routerchi-middleware/internal/infra/config"
 )
 
 func parseLevel(levelStr string) slog.Level {
@@ -22,14 +23,14 @@ func parseLevel(levelStr string) slog.Level {
 	}
 }
 
-func NewHandlerOptions(cfg *config.Configuration) *slog.HandlerOptions {
+func NewHandlerOptions(cfg config.Configuration) *slog.HandlerOptions {
 	return &slog.HandlerOptions{
-		AddSource: true,
-		Level:     parseLevel(cfg.LogLevel),
+		AddSource: cfg.Log.AddSource,
+		Level:     parseLevel(cfg.Log.Level),
 	}
 }
 
-func NewHandler(cfg *config.Configuration) slog.Handler {
+func NewHandler(cfg config.Configuration) slog.Handler {
 	opts := NewHandlerOptions(cfg)
 
 	var handler slog.Handler = slog.NewJSONHandler(os.Stdout, opts)
@@ -40,6 +41,9 @@ func NewHandler(cfg *config.Configuration) slog.Handler {
 	return handler
 }
 
-func NewLogger(cfg *config.Configuration) *slog.Logger {
-	return slog.New(NewHandler(cfg))
+func NewLogger(cfg config.Configuration) *slog.Logger {
+	return slog.New(NewHandler(cfg)).
+		With("service", cfg.Name).
+		With("version", cfg.Version).
+		With("env", cfg.Env)
 }

@@ -7,11 +7,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
+	"time"
+
 	"routerchi-middleware/internal/infra/config"
 	"routerchi-middleware/internal/infra/logger"
 	"routerchi-middleware/internal/infra/server"
-	"sync"
-	"time"
 )
 
 func run(ctx context.Context) error {
@@ -30,9 +31,9 @@ func run(ctx context.Context) error {
 	srv := server.NewServer(cfg)
 
 	go func() {
-		log.Info("listening on", slog.String("address", srv.Addr))
+		log.InfoContext(ctx, "listening http server on", slog.String("address", srv.Addr))
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Error("error listening and serving", slog.String("address", srv.Addr), slog.Any("error", err))
+			log.ErrorContext(ctx, "error listening and serving http server", slog.String("address", srv.Addr), slog.Any("error", err))
 		}
 	}()
 
@@ -45,9 +46,9 @@ func run(ctx context.Context) error {
 		shutdownCtx, cancel := context.WithTimeout(shutdownCtx, 10*time.Second)
 		defer cancel()
 
-		log.Info("shutting down http server", slog.String("address", srv.Addr))
+		log.InfoContext(ctx, "shutting down http server", slog.String("address", srv.Addr))
 		if err := srv.Shutdown(shutdownCtx); err != nil {
-			log.Error("error shutting down http server", slog.String("address", srv.Addr), slog.Any("error", err))
+			log.ErrorContext(ctx, "error shutting down http server", slog.String("address", srv.Addr), slog.Any("error", err))
 		}
 	}()
 	wg.Wait()

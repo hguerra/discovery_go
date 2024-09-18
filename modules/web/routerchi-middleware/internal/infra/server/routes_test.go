@@ -4,8 +4,9 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"routerchi-middleware/internal/infra/server"
 	"testing"
+
+	"routerchi-middleware/internal/infra/server"
 )
 
 func TestHandler(t *testing.T) {
